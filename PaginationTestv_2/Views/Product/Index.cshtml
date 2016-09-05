@@ -1,0 +1,89 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<PaginationTestv_2.Models.Product>
+@{
+    ViewBag.Title = "Index";
+}
+
+<br />
+<br />
+<br />
+
+
+
+<div class="container">
+
+    <div class="dropup">
+        <label>registros </label>
+         @using (Html.BeginForm("Index", "Product", FormMethod.Post))
+         {
+             
+             @Html.DropDownList("ItemsPerPage", PaginationTestv_2.Helpers.DefaultValues.ItemsPerPageList, new { @id = "ItemsPerPageList" })
+             
+             <input type="submit" value="enviar"/>
+        
+             }
+
+    </div>
+    <br />
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Categories Id</th>
+                <th>Categories Name</th>
+                <th>Tags</th>
+                <th>IsDisabled</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @foreach(var product in Model)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@string.Join(", ", product.Categories.Select(p=> p.Id))</td>
+                    <td>@string.Join(", ", product.Categories.Select(p => p.Name))</td>
+                    <td>@string.Join(", ", product.Tags)</td>
+                    <td>@product.IsDisabled</td>
+                </tr>
+            }
+             
+      
+            
+        </tbody>
+
+    </table>
+
+
+
+    <div class="row">
+        @if (Model.HasNextPage || Model.HasPreviousPage)
+        {
+            <div class="ui left floated ">
+             
+                @Html.PagedListPager(Model, (page) => Url.Action("Index", new { page = page, itemsPerPage = ViewBag.CurrentItemsPerPage,  filtro = @ViewBag.filtro}), PagedListRenderOptions.Classic)
+               
+            </div>
+        }
+    </div>
+</div>
+<script>
+
+    function GetList() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Index", "Product")",
+            data: {  },
+        success: function (json) {
+          
+        }
+
+        });
+    }
+</script>
